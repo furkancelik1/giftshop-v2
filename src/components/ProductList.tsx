@@ -1,4 +1,5 @@
 import { client } from "@/sanity/lib/client";
+import { urlFor } from "@/sanity/lib/image";
 import ProductCard from "./ProductCard";
 
 interface Product {
@@ -6,9 +7,7 @@ interface Product {
     name: string;
     slug: { current: string };
     price: number;
-    mainImage: any;
-    category: string;
-    stockStatus: string;
+    image: any;
 }
 
 const ProductList = async () => {
@@ -18,9 +17,7 @@ const ProductList = async () => {
       name,
       slug,
       price,
-      mainImage,
-      category,
-      stockStatus
+      image
     }
   `);
 
@@ -33,7 +30,13 @@ const ProductList = async () => {
                 </h2>
                 <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
                     {products.map((product) => (
-                        <ProductCard key={product._id} product={product} />
+                        <ProductCard key={product._id} product={{
+                            _id: product._id,
+                            name: product.name,
+                            slug: product.slug,
+                            price: product.price,
+                            imageUrl: product.image ? urlFor(product.image).url() : ''
+                        }} />
                     ))}
                 </div>
             </div>

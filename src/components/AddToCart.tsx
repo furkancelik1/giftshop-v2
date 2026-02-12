@@ -1,6 +1,6 @@
 "use client";
 
-import { useCartStore } from "@/store/cartStore";
+import { useCart } from "@/store/cartStore";
 import { useState } from "react";
 
 interface AddToCartProps {
@@ -9,16 +9,16 @@ interface AddToCartProps {
         name: string;
         slug: string;
         price: number;
-        image: string;
+        imageUrl: string;
     };
 }
 
 const AddToCart = ({ product }: AddToCartProps) => {
-    const { addItem } = useCartStore();
+    const { addItem } = useCart();
     const [isAdded, setIsAdded] = useState(false);
 
     const handleAddToCart = () => {
-        addItem(product);
+        addItem({ ...product, quantity: 1 });
         setIsAdded(true);
         setTimeout(() => setIsAdded(false), 2000);
     };

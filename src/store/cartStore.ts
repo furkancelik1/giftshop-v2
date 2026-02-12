@@ -1,63 +1,78 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+// Sepetteki ürünün tipi
 export interface CartItem {
     _id: string;
     name: string;
-    slug: string;
     price: number;
-    image: string;
+    imageUrl: string;
     quantity: number;
+    slug: string;
 }
 
-interface CartStore {
+// Store'un tipi
+interface CartState {
     items: CartItem[];
-    addItem: (item: Omit<CartItem, 'quantity'>) => void;
+    addItem: (item: CartItem) => void;
     removeItem: (id: string) => void;
-    updateQuantity: (id: string, quantity: number) => void;
     clearCart: () => void;
-    getCartTotal: () => number;
+    getTotalPrice: () => number;
+    getItemCount: () => number;
+    updateQuantity: (id: string, quantity: number) => void;
 }
 
-export const useCartStore = create<CartStore>()(
+export const useCart = create<CartState>()(
     persist(
         (set, get) => ({
             items: [],
-            addItem: (item) => {
+
+            // Ürün Ekleme (Varsa adedi artırır, yoksa yeni ekler)
+            addItem: (newItem) => {
                 const currentItems = get().items;
-                const existingItem = currentItems.find((i) => i._id === item._id);
+                const existingItem = currentItems.find((item) => item._id === newItem._id);
 
                 if (existingItem) {
                     set({
-                        items: currentItems.map((i) =>
-                            i._id === item._id ? { ...i, quantity: i.quantity + 1 } : i
+                        items: currentItems.map((item) =>
+                            item._id === newItem._id
+                                ? { ...item, quantity: item.quantity + 1 }
+                                : item
                         ),
                     });
                 } else {
-                    set({ items: [...currentItems, { ...item, quantity: 1 }] });
+                    set({ items: [...currentItems, { ...newItem, quantity: 1 }] });
                 }
             },
+
+            // Ürün Silme
             removeItem: (id) => {
-                set({ items: get().items.filter((i) => i._id !== id) });
+                set({ items: get().items.filter((item) => item._id !== id) });
             },
-            updateQuantity: (id, quantity) => {
-                if (quantity <= 0) {
-                    set({ items: get().items.filter((i) => i._id !== id) });
-                } else {
-                    set({
-                        items: get().items.map((i) =>
-                            i._id === id ? { ...i, quantity } : i
-                        ),
-                    });
-                }
-            },
+
+            // Sepeti Boşaltma
             clearCart: () => set({ items: [] }),
-            getCartTotal: () => {
+
+            // Toplam Fiyat Hesaplama
+            getTotalPrice: () => {
                 return get().items.reduce((total, item) => total + item.price * item.quantity, 0);
-            }
+            },
+
+            // Toplam Ürün Sayısı (Cart ikonunun yanına yazmak için)
+            getItemCount: () => {
+                return get().items.reduce((total, item) => total + item.quantity, 0);
+            },
+
+            updateQuantity: (id, quantity) => {
+                const { items } = get();
+                const newItems = items.map((item) =>
+                    item._id === id ? { ...item, quantity } : item
+                );
+                set({ items: newItems });
+            },
         }),
         {
-            name: 'cart-storage',
+            name: 'shopping-cart', // Tarayıcı hafızasındaki (LocalStorage) ismi
         }
     )
 );

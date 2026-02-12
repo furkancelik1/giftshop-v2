@@ -17,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} antialiased`}>
         <nav className="bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

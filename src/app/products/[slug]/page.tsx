@@ -10,12 +10,7 @@ interface Product {
     name: string;
     slug: { current: string };
     price: number;
-    mainImage: any;
-    gallery: any[];
-    description: any;
-    category: string;
-    stockStatus: string;
-    material: string;
+    image: any;
 }
 
 const ProductPage = async ({ params }: { params: { slug: string } }) => {
@@ -26,12 +21,7 @@ const ProductPage = async ({ params }: { params: { slug: string } }) => {
       name,
       slug,
       price,
-      mainImage,
-      gallery,
-      description,
-      category,
-      stockStatus,
-      material
+      image
     }
   `, { slug });
 
@@ -45,9 +35,9 @@ const ProductPage = async ({ params }: { params: { slug: string } }) => {
                 {/* Product Images */}
                 <div className="mt-8 lg:mt-0">
                     <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg">
-                        {product.mainImage && (
+                        {product.image && (
                             <Image
-                                src={urlFor(product.mainImage).url()}
+                                src={urlFor(product.image).url()}
                                 alt={product.name}
                                 width={800}
                                 height={800}
@@ -55,22 +45,6 @@ const ProductPage = async ({ params }: { params: { slug: string } }) => {
                             />
                         )}
                     </div>
-                    {/* Gallery */}
-                    {product.gallery && (
-                        <div className="mt-4 grid grid-cols-4 gap-4">
-                            {product.gallery.map((image: any, index: number) => (
-                                <div key={index} className="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg">
-                                    <Image
-                                        src={urlFor(image).url()}
-                                        alt={`${product.name} gallery image ${index + 1}`}
-                                        width={200}
-                                        height={200}
-                                        className="h-full w-full object-cover object-center"
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    )}
                 </div>
 
                 {/* Product Info */}
@@ -81,39 +55,13 @@ const ProductPage = async ({ params }: { params: { slug: string } }) => {
                         <p className="text-3xl tracking-tight text-gray-900 dark:text-gray-200">${product.price}</p>
                     </div>
 
-                    <div className="mt-6">
-                        <h3 className="sr-only">Description</h3>
-                        <div className="space-y-6 text-base text-gray-700 dark:text-gray-300">
-                            {/* Simplified description rendering for now */}
-                            {typeof product.description === 'string' ? product.description : <PortableText value={product.description} />}
-                        </div>
-                    </div>
-
-                    <div className="mt-6">
-                        <div className="flex items-center">
-                            <span className="mr-2 font-semibold text-gray-900 dark:text-white">Category:</span>
-                            <span className="capitalize text-gray-600 dark:text-gray-400">{product.category}</span>
-                        </div>
-                        <div className="flex items-center mt-2">
-                            <span className="mr-2 font-semibold text-gray-900 dark:text-white">Material:</span>
-                            <span className="capitalize text-gray-600 dark:text-gray-400">{product.material}</span>
-                        </div>
-                        <div className="flex items-center mt-2">
-                            <span className="mr-2 font-semibold text-gray-900 dark:text-white">Status:</span>
-                            <span className={`capitalize font-medium ${product.stockStatus === 'inStock' ? 'text-green-600' : 'text-red-600'}`}>
-                                {product.stockStatus === 'inStock' ? 'In Stock' : product.stockStatus === 'preOrder' ? 'Pre-Order' : 'Out of Stock'}
-                            </span>
-                        </div>
-                    </div>
-
-
                     <div className="mt-10 flex">
                         <AddToCart product={{
                             _id: product._id,
                             name: product.name,
                             slug: product.slug.current,
                             price: product.price,
-                            image: product.mainImage ? urlFor(product.mainImage).url() : ''
+                            imageUrl: product.image ? urlFor(product.image).url() : ''
                         }} />
                     </div>
                 </div>

@@ -1,12 +1,12 @@
 "use client";
 
-import { useCartStore } from "@/store/cartStore";
+import { useCart } from "@/store/cartStore";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const CartPage = () => {
-    const { items, removeItem, updateQuantity, getCartTotal } = useCartStore();
+    const { items, removeItem, updateQuantity, getTotalPrice } = useCart();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -54,10 +54,10 @@ const CartPage = () => {
                                 {items.map((item) => (
                                     <li key={item._id} className="flex py-6 sm:py-10">
                                         <div className="flex-shrink-0">
-                                            {item.image && (
+                                            {item.imageUrl && (
                                                 <div className="relative h-24 w-24 rounded-md overflow-hidden sm:h-48 sm:w-48">
                                                     <Image
-                                                        src={item.image}
+                                                        src={item.imageUrl}
                                                         alt={item.name}
                                                         fill
                                                         className="object-cover object-center"
@@ -129,7 +129,7 @@ const CartPage = () => {
                             <dl className="mt-6 space-y-4">
                                 <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                                     <dt className="text-base font-medium text-gray-900 dark:text-white">Order total</dt>
-                                    <dd className="text-base font-medium text-gray-900 dark:text-white">${getCartTotal()}</dd>
+                                    <dd className="text-base font-medium text-gray-900 dark:text-white">${getTotalPrice()}</dd>
                                 </div>
                             </dl>
 

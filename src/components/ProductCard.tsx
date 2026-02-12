@@ -1,66 +1,64 @@
-import { urlFor } from "@/sanity/lib/image";
+"use client"; // React hooks kullanmak için
 import Image from "next/image";
 import Link from "next/link";
-import { type SanityImageSource } from "@sanity/image-url";
+import { ShoppingBag } from "lucide-react";
+import { useCart } from "@/store/cartStore";
 
-interface ProductCardProps {
-    product: {
-        _id: string;
-        name: string;
-        slug: { current: string };
-        price: number;
-        mainImage: SanityImageSource;
-        category: string;
-        stockStatus: string;
-    };
+interface ProductProps {
+    _id: string;
+    name: string;
+    price: number;
+    imageUrl: string;
+    slug: { current: string };
 }
 
-const ProductCard = ({ product }: ProductCardProps) => {
-    return (
-        <Link href={`/products/${product.slug.current}`} className="group relative block overflow-hidden rounded-xl bg-white dark:bg-zinc-900 border border-gray-200 dark:border-gray-800 transition-all duration-300 hover:shadow-lg hover:border-indigo-500/50">
-            <div className="relative aspect-[4/5] w-full overflow-hidden bg-gray-100 dark:bg-zinc-800">
-                {product.mainImage ? (
-                    <Image
-                        src={urlFor(product.mainImage).url()}
-                        alt={product.name}
-                        fill
-                        className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                ) : (
-                    <div className="flex h-full w-full items-center justify-center text-gray-400">
-                        No Image
-                    </div>
-                )}
+export default function ProductCard({ product }: { product: ProductProps }) {
+    const { addItem } = useCart();
 
-                {product.stockStatus === 'outOfStock' && (
-                    <div className="absolute top-2 right-2 rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white shadow-sm">
-                        Out of Stock
-                    </div>
-                )}
-                {product.stockStatus === 'preOrder' && (
-                    <div className="absolute top-2 right-2 rounded-full bg-yellow-500 px-3 py-1 text-xs font-bold text-white shadow-sm">
-                        Pre-Order
-                    </div>
-                )}
+    const handleAddToCart = (e: React.MouseEvent) => {
+        e.preventDefault(); // Link'e tıklamayı engelle
+        addItem({
+            ...product,
+            slug: product.slug.current,
+            quantity: 1, // İlk eklemede 1 adet
+        });
+    };
+
+    return (
+        <Link
+            href={`/products/${product.slug.current}`}
+            className="group relative block overflow-hidden rounded-xl bg-gray-900 border border-gray-800 hover:border-white/20 transition-all duration-300"
+        >
+            {/* Görsel Alanı */}
+            <div className="relative h-64 w-full overflow-hidden bg-gray-800">
+                <Image
+                    src={product.imageUrl}
+                    alt={product.name}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    priority
+                />
+
+                {/* Sepete Ekle Butonu (Hoverda Çıkar) */}
+                <button
+                    onClick={handleAddToCart}
+                    className="absolute bottom-4 right-4 translate-y-12 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 bg-white text-black p-3 rounded-full shadow-lg hover:bg-gray-200 cursor-pointer z-10"
+                >
+                    <ShoppingBag size={20} />
+                </button>
             </div>
 
-            <div className="p-4">
-                <div className="mb-2 flex items-center justify-between">
-                    <span className="inline-block rounded-full bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 capitalize">
-                        {product.category}
-                    </span>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">
-                        ${product.price}
-                    </p>
-                </div>
-
-                <h3 className="text-base font-medium text-gray-900 dark:text-white line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+            {/* Bilgi Alanı */}
+            <div className="p-5">
+                <h3 className="text-lg font-medium text-white group-hover:text-gray-300 transition-colors">
                     {product.name}
                 </h3>
+                <p className="mt-1 text-sm text-gray-400">3D Baskı / PLA</p>
+                <div className="mt-3 flex items-center justify-between">
+                    <span className="text-xl font-bold text-white">₺{product.price}</span>
+                </div>
             </div>
         </Link>
     );
-};
-
-export default ProductCard;
+}

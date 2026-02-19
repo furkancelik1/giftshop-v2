@@ -1,25 +1,25 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-// Sepetteki ürünün tipi
 export interface CartItem {
     _id: string;
     name: string;
     price: number;
-    imageUrl: string;
     quantity: number;
+    imageUrl: string;
     slug: string;
 }
 
-// Store'un tipi
 interface CartState {
     items: CartItem[];
     addItem: (item: CartItem) => void;
     removeItem: (id: string) => void;
-    clearCart: () => void;
-    getTotalPrice: () => number;
-    getItemCount: () => number;
+    incrementItem: (id: string) => void;
+    decrementItem: (id: string) => void;
     updateQuantity: (id: string, quantity: number) => void;
+    clearCart: () => void;
+    getItemCount: () => number;
+    getTotalPrice: () => number;
 }
 
 export const useCart = create<CartState>()(
@@ -27,7 +27,7 @@ export const useCart = create<CartState>()(
         (set, get) => ({
             items: [],
 
-            // Ürün Ekleme (Varsa adedi artırır, yoksa yeni ekler)
+            // Dışarıdan (Ürün Detay sayfasından) ilk ekleme
             addItem: (newItem) => {
                 const currentItems = get().items;
                 const existingItem = currentItems.find((item) => item._id === newItem._id);
@@ -45,34 +45,59 @@ export const useCart = create<CartState>()(
                 }
             },
 
-            // Ürün Silme
+            // Çöp kutusuna basılınca ürünü tamamen sil
             removeItem: (id) => {
-                set({ items: get().items.filter((item) => item._id !== id) });
+                set((state) => ({
+                    items: state.items.filter((item) => item._id !== id),
+                }));
             },
 
-            // Sepeti Boşaltma
+            // Sepet içindeki "+" butonuna basılınca çalışacak
+            incrementItem: (id) => {
+                set((state) => ({
+                    items: state.items.map((item) =>
+                        item._id === id ? { ...item, quantity: item.quantity + 1 } : item
+                    ),
+                }));
+            },
+
+            // Sepet içindeki "-" butonuna basılınca çalışacak
+            decrementItem: (id) => {
+                const currentItems = get().items;
+                const existingItem = currentItems.find((item) => item._id === id);
+
+                if (existingItem?.quantity === 1) {
+                    set({ items: currentItems.filter((item) => item._id !== id) });
+                } else {
+                    set({
+                        items: currentItems.map((item) =>
+                            item._id === id ? { ...item, quantity: item.quantity - 1 } : item
+                        ),
+                    });
+                }
+            },
+
+            // Miktarı doğrudan güncelle (Select box için)
+            updateQuantity: (id, newQuantity) => {
+                set((state) => ({
+                    items: state.items.map((item) =>
+                        item._id === id ? { ...item, quantity: newQuantity } : item
+                    ),
+                }));
+            },
+
             clearCart: () => set({ items: [] }),
 
-            // Toplam Fiyat Hesaplama
-            getTotalPrice: () => {
-                return get().items.reduce((total, item) => total + item.price * item.quantity, 0);
-            },
-
-            // Toplam Ürün Sayısı (Cart ikonunun yanına yazmak için)
             getItemCount: () => {
                 return get().items.reduce((total, item) => total + item.quantity, 0);
             },
 
-            updateQuantity: (id, quantity) => {
-                const { items } = get();
-                const newItems = items.map((item) =>
-                    item._id === id ? { ...item, quantity } : item
-                );
-                set({ items: newItems });
+            getTotalPrice: () => {
+                return get().items.reduce((total, item) => total + item.price * item.quantity, 0);
             },
         }),
         {
-            name: 'shopping-cart', // Tarayıcı hafızasındaki (LocalStorage) ismi
+            name: 'cart-storage',
         }
     )
 );

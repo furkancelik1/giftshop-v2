@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-    const { items, removeItem, addItem, getTotalPrice } = useCart();
+    const { items, removeItem, incrementItem, decrementItem, getTotalPrice } = useCart();
     const [mounted, setMounted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -96,14 +96,14 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
                                             {/* Miktar Artır/Azalt */}
                                             <div className="flex items-center gap-2 border border-gray-300 dark:border-gray-700 rounded-md">
                                                 <button
-                                                    onClick={() => removeItem(item._id)} // Şimdilik silme, azaltma mantığını sonra ekleriz
+                                                    onClick={() => decrementItem(item._id)}
                                                     className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800"
                                                 >
                                                     <Minus size={16} />
                                                 </button>
                                                 <span className="w-4 text-center">{item.quantity}</span>
                                                 <button
-                                                    onClick={() => addItem(item)}
+                                                    onClick={() => incrementItem(item._id)}
                                                     className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800"
                                                 >
                                                     <Plus size={16} />

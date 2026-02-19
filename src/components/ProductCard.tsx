@@ -30,16 +30,22 @@ export default function ProductCard({ product }: { product: ProductProps }) {
             className="group relative block overflow-hidden rounded-xl bg-gray-900 border border-gray-800 hover:border-white/20 transition-all duration-300"
         >
             {/* Görsel Alanı */}
-            <div className="relative h-64 w-full overflow-hidden bg-gray-800">
-                <Image
-                    src={product.imageUrl}
-                    alt={product.name}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    priority
-                />
-
+            {/* Görsel Alanı */}
+            <div className="relative h-64 w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
+                {product.imageUrl ? (
+                    <Image
+                        src={product.imageUrl}
+                        alt={product.name || "Ürün Görseli"}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover object-center transition-transform duration-300 hover:scale-105"
+                    />
+                ) : (
+                    // Eğer ürünün resmi Sanity'de yüklenmemişse bu gri kutu görünür
+                    <div className="flex h-full w-full items-center justify-center bg-gray-200 dark:bg-gray-700 text-gray-500 text-sm font-medium">
+                        Görsel Yok
+                    </div>
+                )}
                 {/* Sepete Ekle Butonu (Hoverda Çıkar) */}
                 <button
                     onClick={handleAddToCart}
@@ -59,6 +65,6 @@ export default function ProductCard({ product }: { product: ProductProps }) {
                     <span className="text-xl font-bold text-white">₺{product.price}</span>
                 </div>
             </div>
-        </Link>
+        </Link >
     );
 }

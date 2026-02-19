@@ -27,5 +27,15 @@ export const product = defineType({
             type: "slug",
             options: { source: "name" },
         }),
+        defineField({
+            name: 'category',
+            title: 'Kategori',
+            type: 'reference',
+            to: [
+                {
+                    type: 'category',
+                },
+            ],
+        }),
     ],
 });

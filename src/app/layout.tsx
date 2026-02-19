@@ -7,8 +7,16 @@ import CartCounter from "@/components/CartCounter";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Giftshop V2 | Premium 3D Figures",
-  description: "High-performance e-commerce platform for custom gifts.",
+  title: "Giftshop | 3D Figür ve Özel Hediyelikler",
+  description: "Özenle üretilmiş 3D figürler, sanat eserleri ve eşsiz aksesuarlar. Kendi tarzınızı yansıtacak en güzel hediyelikler güvenli alışveriş altyapısıyla burada!",
+  openGraph: {
+    title: "Giftshop | 3D Figür ve Özel Hediyelikler",
+    description: "Özenle üretilmiş 3D figürler, sanat eserleri ve eşsiz aksesuarlar.",
+    url: "https://giftshop-v2.vercel.app",
+    siteName: "Giftshop",
+    locale: "tr_TR",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
